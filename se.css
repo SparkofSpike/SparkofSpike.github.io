@@ -18,6 +18,11 @@ h2 {
   margin: -4.3% 0 0.5% 0;
 }
 
+.article {
+  background-color: rgb(225, 225, 225);
+}
+
+
 .article #context{
   margin: 0 8% 0 8%;
   background-color: rgb(250, 249, 255);
