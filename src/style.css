@@ -1,0 +1,210 @@
+/* ====================================
+   SPIRE · 星邃之径
+   Deep Space / Cthulhu Dark Theme
+   ==================================== */
+
+/* ===== CSS Variables ===== */
+:root {
+  --bg-deep: #000000;
+  --bg-dark: #050008;
+  --bg-card: rgba(10, 0, 18, 0.55);
+  --bg-card-hover: rgba(18, 0, 30, 0.7);
+  --bg-glass: rgba(10, 0, 18, 0.4);
+
+  --accent-primary: #c9a84c;
+  --accent-primary-glow: rgba(201, 168, 76, 0.15);
+  --accent-secondary: #00bcd4;
+  --accent-secondary-glow: rgba(0, 188, 212, 0.1);
+  --accent-purple: #6b2fa0;
+  --accent-purple-glow: rgba(107, 47, 160, 0.2);
+
+  --text-primary: #e8e6f0;
+  --text-secondary: #9a96a8;
+  --text-muted: #5a5668;
+  --text-accent: #c9a84c;
+
+  --border-glow: rgba(201, 168, 76, 0.08);
+  --border-active: rgba(201, 168, 76, 0.25);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "Cascadia Code", "Fira Code", "JetBrains Mono", Consolas, monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-deep);
+  color: var(--text-secondary);
+  line-height: 1.8;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-purple), var(--accent-primary));
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+
+/* ===== Selection ===== */
+::selection {
+  background: rgba(201, 168, 76, 0.2);
+  color: var(--text-primary);
+}
+
+/* ===== Glass Card ===== */
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-md);
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.glass-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-active);
+  box-shadow:
+    0 0 30px var(--accent-primary-glow),
+    0 0 60px var(--accent-purple-glow);
+  transform: translateY(-2px);
+}
+
+/* ===== Gradient Text ===== */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== Animations ===== */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes eye-blink {
+  0%, 94%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
+}
+
+/* ===== Nebula glow backgrounds ===== */
+.nebula-glow {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+  z-index: 0;
+}
+.nebula-glow-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(107, 47, 160, 0.08) 0%, transparent 70%);
+  top: -10%;
+  left: -10%;
+  animation: float 20s ease-in-out infinite;
+}
+.nebula-glow-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 188, 212, 0.05) 0%, transparent 70%);
+  bottom: -5%;
+  right: -5%;
+  animation: float 25s ease-in-out infinite reverse;
+}
+.nebula-glow-3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.04) 0%, transparent 70%);
+  top: 40%;
+  left: 60%;
+  animation: float 18s ease-in-out infinite 5s;
+}
+
+/* ===== Section Shared ===== */
+.section {
+  position: relative;
+  z-index: 1;
+  padding: 120px 0;
+}
+.section-label {
+  font-size: 11px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.section-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 48px;
+  letter-spacing: -0.5px;
+}
+
+/* ===== Container ===== */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .section {
+    padding: 80px 0;
+  }
+  .section-title {
+    font-size: 28px;
+    margin-bottom: 32px;
+  }
+}
+
+/* ===== Element Plus Overrides ===== */
+.el-tag {
+  --el-tag-bg-color: rgba(201, 168, 76, 0.06) !important;
+  --el-tag-border-color: rgba(201, 168, 76, 0.15) !important;
+  --el-tag-text-color: var(--text-secondary) !important;
+  --el-tag-hover-color: var(--accent-primary) !important;
+}
