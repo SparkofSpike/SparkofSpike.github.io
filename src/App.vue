@@ -113,7 +113,7 @@ onMounted(() => {
     <div class="hero-inner">
       <div class="hero-avatar-ring">
         <div class="hero-avatar">
-          <span class="hero-avatar-icon">S</span>
+          <img src="/avata.png" alt="Spike" class="hero-avatar-img" />
         </div>
       </div>
       <div class="hero-title-wrap">
@@ -265,7 +265,7 @@ onMounted(() => {
   background: linear-gradient(135deg, #0d0015 0%, #1a0033 100%);
   display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #000;
 }
-.hero-avatar-icon { font-size: 44px; font-weight: 700; color: var(--accent-primary); opacity: 0.8; filter: drop-shadow(0 0 10px rgba(201,168,76,0.3)); line-height: 1; }
+.hero-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
 .hero-greeting { font-size: 12px; letter-spacing: 4px; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 8px; }
 .hero-title-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .hero-name { font-size: 64px; font-weight: 800; color: var(--text-primary); letter-spacing: -2px; line-height: 1.1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
@@ -320,7 +320,7 @@ onMounted(() => {
   .hero-name-line { font-size: 16px; }
   .hero-sub { font-size: 14px; }
   .hero-avatar-ring { width: 100px; height: 100px; }
-  .hero-avatar-icon { font-size: 32px; }
+  .hero-avatar-img { width: 100%; height: 100%; }
   .about-text, .about-skills { padding: 24px; }
 }
 </style>
