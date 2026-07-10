@@ -27,7 +27,7 @@ const messages: Record<Locale, Record<string, string>> = {
     'about.label': '/ about',
     'about.title': 'Who Am I',
 
-    'about.p1': '我是 **Sp1ke / SparkofSpike / Sh1Zuku / Tentak0 / ZAKOTAKO / EVILEVILNEKO ……** 好吧，别的我自己也记不得了。等等，我自己都不知道自己是谁，我该怎么自我介绍？嗯，这是个很严肃的问题……',
+    'about.p1': '我是 <strong style="color:var(--text-primary);">Sp1ke / SparkofSpike / Sh1Zuku / Tentak0 / ZAKOTAKO / EVILEVILNEKO ……</strong> 好吧，别的我自己也记不得了。等等，我自己都不知道自己是谁，我该怎么自我介绍？嗯，这是个很严肃的问题……',
     'about.p2': '如果你在打 FPS 的时候遇到我，我大概是那个令你印象深刻的单排闭麦枪男——不交流，不配合。不鼓励，只压力。输了全是你的锅，赢了全是我的好。别骂了，骂我也不会反思的，我只会觉得自己枪软，然后 AimLab 加练五小时。没错，我 CS2 S 而不会道具，无畏契约神话还不会育苗，守望先锋宗师意识还不如白金。如果匹配到我，那只能祈祷好运了，祈祷我今天的状态还不错，能把对面的脑袋全部打开花。',
     'about.p3': '在 Galgame 的世界里，我是个绝症级别的患者。从全年龄到 R18，从萌系到郁系，从王道到电波，没有我不吃的类型。硬盘里的库存够玩到下个世纪，而 Steam 愿望单还在不停膨胀。我已经对现实的异性没兴趣了。我大抵是病了，而我不打算治。',
     'about.p4': '当然，你还能在那些神学和宗教学的评论区底下偶尔遇到我。要问我了解什么？嗯，三言两语说不清……简而言之，就是什么都不懂，这下看懂了吧？是了。因为大师总抱有学徒之心。',
@@ -62,7 +62,7 @@ const messages: Record<Locale, Record<string, string>> = {
     'about.label': '/ about',
     'about.title': 'Who Am I',
 
-    'about.p1': "I'm **Sp1ke / SparkofSpike / Sh1Zuku / Tentak0 / ZAKOTAKO / EVILEVILNEKO ……** Okay, I can't even remember the rest myself. Wait — I don't even know who I am, so how am I supposed to introduce myself? Yeah, that's a pretty serious question……",
+    'about.p1': "I'm <strong style=\"color:var(--text-primary);\">Sp1ke / SparkofSpike / Sh1Zuku / Tentak0 / ZAKOTAKO / EVILEVILNEKO ……</strong> Okay, I can't even remember the rest myself. Wait — I don't even know who I am, so how am I supposed to introduce myself? Yeah, that's a pretty serious question……",
     'about.p2': "If you run into me while playing FPS, I'm probably that unforgettable solo-queue, mic-off aim demon — no comms, no teamwork. No encouragement, only pressure. Losses are your fault, wins are all me. Don't bother flaming me, I won't self-reflect; I'll just think my aim was off and grind AimLab for five more hours. That's right — I'm CS2 S-rank without knowing any utility, Valorant Immortal without crosshair placement, OW GM with a Platinum game sense. If you get matched with me, just pray I'm having a good day and popping heads.",
     'about.p3': "In the world of Galgame, I'm a terminal patient. All-ages to R18, moege to utsuge, kingame to denpa — there's no type I don't consume. My drive has enough stock to last the next century, while my Steam wishlist keeps inflating. I've lost all interest in real-life romance. I'm probably sick, and I don't plan on recovering.",
     'about.p4': "You might also run into me in the comments sections of theology and religious studies. Asking what I know? Well, it's hard to put in a few words… In short: I know nothing. Got it now? Exactly. Because the master always holds the heart of an apprentice.",
