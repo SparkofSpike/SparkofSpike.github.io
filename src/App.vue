@@ -78,28 +78,31 @@ function syncRightHeight() {
   const right = document.querySelector<HTMLElement>('.about-skills')
   const cloud = document.querySelector<HTMLElement>('.skills-cloud')
   if (!left || !right || !cloud) return
-  // Clear previous transform so layout is accurate for measurement
+  // Clear previous transform so we measure the true layout
   cloud.style.transform = 'none'
   right.style.maxHeight = ''
-  requestAnimationFrame(() => {
-    const targetH = left.offsetHeight
-    right.style.maxHeight = `${targetH}px`
-    const pad = 64
-    const contentH = cloud.scrollHeight
-    if (contentH > targetH - pad) {
-      const factor = (targetH - pad) / contentH
-      cloud.style.transform = `scale(${factor})`
-      cloud.style.transformOrigin = 'top center'
-    } else {
-      cloud.style.transform = 'none'
-    }
-  })
+  const targetH = left.offsetHeight
+  right.style.maxHeight = `${targetH}px`
+  const pad = 64
+  const contentH = cloud.scrollHeight
+  if (contentH > targetH - pad) {
+    const factor = (targetH - pad) / contentH
+    cloud.style.transform = `scale(${factor})`
+    cloud.style.transformOrigin = 'top center'
+  } else {
+    cloud.style.transform = 'none'
+  }
 }
 
 onMounted(() => {
   shuffledTags.value = shuffle(allTags)
   syncRightHeight()
   window.addEventListener('resize', syncRightHeight)
+  const gridEl = document.querySelector('.about-grid')
+  if (gridEl) {
+    const ro = new ResizeObserver(syncRightHeight)
+    ro.observe(gridEl)
+  }
 })
 </script>
 
