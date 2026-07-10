@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import StarField from './components/StarField.vue'
 import { useI18n, tagTranslations, t } from './i18n'
 
@@ -59,7 +59,8 @@ function shuffle(arr: TagItem[]): TagItem[] {
     ;[a[i], a[j]] = [a[j], a[i]]
   }
   return a.map(t => {
-    const fs = 10 + Math.random() * 7
+    const rawFs = t.highlight ? 14 + Math.random() * 6 : 10 + Math.random() * 6
+    const fs = Math.round(rawFs)
     return {
       ...t,
       rx: (Math.random() - 0.5) * 20,
@@ -78,31 +79,37 @@ function syncRightHeight() {
   const right = document.querySelector<HTMLElement>('.about-skills')
   const cloud = document.querySelector<HTMLElement>('.skills-cloud')
   if (!left || !right || !cloud) return
-  // Clear previous transform so we measure the true layout
-  cloud.style.transform = 'none'
+  // Reset scale so we measure the true layout
+  cloud.style.setProperty('--cloud-scale', '1')
   right.style.maxHeight = ''
   const targetH = left.offsetHeight
   right.style.maxHeight = `${targetH}px`
-  const pad = 64
+  const pad = 32
   const contentH = cloud.scrollHeight
   if (contentH > targetH - pad) {
     const factor = (targetH - pad) / contentH
-    cloud.style.transform = `scale(${factor})`
-    cloud.style.transformOrigin = 'top center'
-  } else {
-    cloud.style.transform = 'none'
+    cloud.style.setProperty('--cloud-scale', String(factor))
   }
 }
 
 onMounted(() => {
   shuffledTags.value = shuffle(allTags)
-  syncRightHeight()
+  nextTick(() => {
+    syncRightHeight()
+  })
   window.addEventListener('resize', syncRightHeight)
   const gridEl = document.querySelector('.about-grid')
   if (gridEl) {
     const ro = new ResizeObserver(syncRightHeight)
     ro.observe(gridEl)
   }
+})
+
+// Re-sync tag scale on language switch
+watch(locale, () => {
+  const right = document.querySelector<HTMLElement>('.about-skills')
+  if (right) right.style.maxHeight = ''
+  nextTick(() => syncRightHeight())
 })
 </script>
 
@@ -177,8 +184,8 @@ onMounted(() => {
               :style="tag.rx !== undefined ? {
                 transform: `translate(${tag.rx}px, ${tag.ry}px) rotate(${tag.rot}deg)`,
                 marginTop: `${tag.mt}px`,
-                fontSize: `${tag.fs}px`,
-                padding: `${tag.pv}px ${tag.ph}px`
+                fontSize: `calc(${tag.fs}px * var(--cloud-scale, 1))`,
+                padding: `calc(${tag.pv}px * var(--cloud-scale, 1)) calc(${tag.ph}px * var(--cloud-scale, 1))`
               } : {}">{{ tag.label }}</span>
           </div>
         </div>
@@ -306,14 +313,14 @@ onMounted(() => {
   background: linear-gradient(90deg, transparent, rgba(201,168,76,0.15), transparent);
 }
 
-.about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
+.about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; align-items: start; }
 @media (max-width: 720px) { .about-grid { grid-template-columns: 1fr; } }
 .about-text { padding: 32px; display: flex; flex-direction: column; justify-content: center; }
 .about-text p { color: var(--text-secondary); margin-bottom: 12px; font-size: 15px; line-height: 1.8; }
 .about-text p:last-child { margin-bottom: 0; }
-.about-skills { padding: 32px; display: flex; align-items: flex-start; overflow: hidden; }
+.about-skills { padding: 32px 12px; display: flex; align-items: flex-start; overflow: hidden; }
 
-.skills-cloud { display: flex; flex-wrap: wrap; column-gap: 8px; row-gap: 24px; align-content: flex-start; padding: 24px 12px; }
+.skills-cloud { display: flex; flex-wrap: wrap; column-gap: 8px; row-gap: 24px; align-content: flex-start; padding: 24px 8px; }
 .skill-tag { display: inline-flex; align-items: center; border-radius: 999px; background: rgba(10,0,18,0.6); border: 1px solid rgba(201,168,76,0.08); color: var(--text-secondary); transition: all 0.3s; cursor: default; white-space: nowrap; }
 .skill-tag:hover { background: rgba(201,168,76,0.06); border-color: rgba(201,168,76,0.2); color: var(--text-primary); }
 .skill-tag.highlight { border-color: rgba(201,168,76,0.2); color: var(--text-accent); background: rgba(201,168,76,0.04); }
