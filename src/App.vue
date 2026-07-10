@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import StarField from './components/StarField.vue'
+import { useI18n, tLabel as tagLabel, t } from './i18n'
+
+const { locale, toggleLocale } = useI18n()
 
 /* ===== Tag Cloud Data ===== */
 interface TagItem {
   label: string
+  en?: string
   highlight?: boolean
   rx?: number; ry?: number; rot?: number; mt?: number
   fs?: number; pv?: number; ph?: number
@@ -13,32 +17,39 @@ interface TagItem {
 const allTags: TagItem[] = [
   { label: 'FPS', highlight: true },
   { label: 'Galgame', highlight: true },
-  { label: '洛氏恐怖', highlight: true },
+  { label: '洛氏恐怖', en: 'Lovecraftian Horror', highlight: true },
   { label: 'AIGC', highlight: true },
   { label: 'Vibe Coding', highlight: true },
   { label: 'STG', highlight: true },
   { label: 'OC', highlight: true },
-  { label: 'Web 开发' }, { label: 'JAVA' }, { label: 'C++' }, { label: 'C#' },
+  { label: 'Web 开发', en: 'Web Dev' }, { label: 'JAVA' }, { label: 'C++' }, { label: 'C#' },
   { label: 'Rust' }, { label: 'Lua' }, { label: 'SQLite' }, { label: 'Node.js' },
   { label: 'Python' }, { label: 'TypeScript' }, { label: 'HTML / CSS' },
   { label: 'Prompt Engineering' }, { label: 'Agent' }, { label: 'Context Engineering' },
   { label: 'Harness Engineering' }, { label: 'Loop Engineering' }, { label: 'MCP' },
-  { label: '世界观构筑', highlight: true },
-  { label: '神秘学' }, { label: '神学' }, { label: '宗教学' },
-  { label: '东方Project', highlight: true }, { label: '网文' }, { label: '传统文化' },
-  { label: '魂系' }, { label: '守望先锋' }, { label: 'Steam' }, { label: '外设痴' },
-  { label: '克苏鲁神话' }, { label: '蔚蓝档案' }, { label: '公主连结' }, { label: '刃牙' },
-  { label: '论战' }, { label: '电波系' }, { label: '黑深残' },
-  { label: 'BLACKSOULS' }, { label: '雌小鬼' }, { label: '笨蛋' },
-  { label: '金发' }, { label: '贫乳' }, { label: '泣系' }, { label: '重力' },
-  { label: '叙事诡计' }, { label: '神魔器' }, { label: '妹控' },
-  { label: '超时空辉夜姬！' }, { label: '海虎' },
+  { label: '世界观构筑', en: 'Worldbuilding', highlight: true },
+  { label: '神秘学', en: 'Occultism' }, { label: '神学', en: 'Theology' }, { label: '宗教学', en: 'Religious Studies' },
+  { label: '东方Project', en: 'Touhou Project', highlight: true }, { label: '网文', en: 'Web Novels' }, { label: '传统文化', en: 'Traditional Culture' },
+  { label: '魂系', en: 'Souls-like' }, { label: '守望先锋', en: 'Overwatch' }, { label: 'Steam' }, { label: '外设痴', en: 'Peripheral Maniac' },
+  { label: '克苏鲁神话', en: 'Cthulhu Mythos' }, { label: '蔚蓝档案', en: 'Blue Archive' }, { label: '公主连结', en: 'Princess Connect' }, { label: '刃牙', en: 'Baki' },
+  { label: '论战', en: 'Power Scaling' }, { label: '电波系', en: 'Denpa-kei' }, { label: '黑深残', en: 'Dark & Edgy' },
+  { label: 'BLACKSOULS' }, { label: '雌小鬼', en: 'Bratty Girl' }, { label: '笨蛋', en: 'Baka' },
+  { label: '金发', en: 'Blonde' }, { label: '贫乳', en: 'Flat Chest' }, { label: '泣系', en: 'Nakige' }, { label: '重力', en: 'Heavy' },
+  { label: '叙事诡计', en: 'Narrative Trick' }, { label: '神魔器', en: 'Denpa Gear' }, { label: '妹控', en: 'Siscon' },
+  { label: '超时空辉夜姬！', en: 'Space-Time Kaguya-hime!' }, { label: '海虎', en: 'Sea Tiger' },
   { label: 'Neural-Memory' }, { label: 'CodeWhale' },
-  { label: '术力口' }, { label: '猫娘' }, { label: '考据狂' }, { label: '中二病' },
-  { label: '萝莉控', highlight: true },
+  { label: '术力口', en: 'Vocaloid-ish' }, { label: '猫娘', en: 'Catgirl' }, { label: '考据狂', en: 'Lore Junkie' }, { label: '中二病', en: 'Chuunibyou' },
+  { label: '萝莉控', en: 'Lolicon', highlight: true },
 ]
 
 const shuffledTags = ref<TagItem[]>([])
+
+const displayTags = computed(() =>
+  shuffledTags.value.map(t => ({
+    ...t,
+    label: tagLabel(t),
+  }))
+)
 
 function shuffle(arr: TagItem[]): TagItem[] {
   const a = [...arr]
@@ -93,6 +104,11 @@ onMounted(() => {
   <div class="nebula-glow nebula-glow-2"></div>
   <div class="nebula-glow nebula-glow-3"></div>
 
+  <!-- Language Toggle -->
+  <button class="lang-toggle" @click="toggleLocale" :title="locale === 'en' ? '切换到中文' : 'Switch to English'">
+    {{ locale === 'en' ? '中' : 'EN' }}
+  </button>
+
   <section class="hero-section section">
     <div class="hero-inner">
       <div class="hero-avatar-ring">
@@ -101,24 +117,24 @@ onMounted(() => {
         </div>
       </div>
       <div class="hero-title-wrap">
-        <span class="hero-greeting">欢迎，敢于凝视深渊者</span>
+        <span class="hero-greeting">{{ t('hero.greeting') }}</span>
         <h1 class="hero-name">
-          <span class="hero-name-line">Hi, I'm</span>
-          <span class="hero-name-highlight">Spike</span>
+          <span class="hero-name-line">{{ t('hero.nameLine') }}</span>
+          <span class="hero-name-highlight">{{ t('hero.nameHighlight') }}</span>
         </h1>
-        <p class="hero-sub">A truly unruly freewheeling creature</p>
+        <p class="hero-sub">{{ t('hero.sub') }}</p>
        </div>
       <div class="hero-tags">
-        <span class="hero-tag">FPS 魔怔闭麦单排人</span>
-        <span class="hero-tag">Galgame 绝症级别玩家</span>
-        <span class="hero-tag">洛氏恐怖重度爱好者</span>
-        <span class="hero-tag">神秘学、神学与宗教学的囚徒</span>
-        <span class="hero-tag">野班子程序员兼大炼金术师</span>
-        <span class="hero-tag">杂到来者不拒的恐怖暴食者</span>
-        <span class="hero-tag">无可救药的萝莉控</span>
+        <span class="hero-tag">{{ t('hero.tag1') }}</span>
+        <span class="hero-tag">{{ t('hero.tag2') }}</span>
+        <span class="hero-tag">{{ t('hero.tag3') }}</span>
+        <span class="hero-tag">{{ t('hero.tag4') }}</span>
+        <span class="hero-tag">{{ t('hero.tag5') }}</span>
+        <span class="hero-tag">{{ t('hero.tag6') }}</span>
+        <span class="hero-tag">{{ t('hero.tag7') }}</span>
       </div>
       <div class="scroll-indicator">
-        <span class="scroll-text">向下探索</span>
+        <span class="scroll-text">{{ t('scroll.text') }}</span>
         <span class="scroll-arrow">v</span>
       </div>
     </div>
@@ -132,22 +148,22 @@ onMounted(() => {
 
   <section class="section" id="about">
     <div class="container">
-      <div class="section-label">/ about</div>
+      <div class="section-label">{{ t('about.label') }}</div>
       <h2 class="section-title">Who <span class="gradient-text">Am I</span></h2>
       <div class="about-grid">
         <div class="about-text glass-card">
-          <p>我是 <strong style="color:var(--text-primary);">Sp1ke / SparkofSpike / Sh1Zuku / Tentak0 / ZAKOTAKO / EVILEVILNEKO ……</strong> 好吧，别的我自己也记不得了。等等，我自己都不知道自己是谁，我该怎么自我介绍？嗯，这是个很严肃的问题……</p>
-          <p>如果你在打 FPS 的时候遇到我，我大概是那个令你印象深刻的单排闭麦枪男——不交流，不配合。不鼓励，只压力。输了全是你的锅，赢了全是我的好。别骂了，骂我也不会反思的，我只会觉得自己枪软，然后 AimLab 加练五小时。没错，我 CS2 S 而不会道具，无畏契约神话还不会育苗，守望先锋宗师意识还不如白金。如果匹配到我，那只能祈祷好运了，祈祷我今天的状态还不错，能把对面的脑袋全部打开花。</p>
-          <p>在 Galgame 的世界里，我是个绝症级别的患者。从全年龄到 R18，从萌系到郁系，从王道到电波，没有我不吃的类型。硬盘里的库存够玩到下个世纪，而 Steam 愿望单还在不停膨胀。我已经对现实的异性没兴趣了。我大抵是病了，而我不打算治。</p>
-          <p>当然，你还能在那些神学和宗教学的评论区底下偶尔遇到我。要问我了解什么？嗯，三言两语说不清……简而言之，就是什么都不懂，这下看懂了吧？是了。因为大师总抱有学徒之心。</p>
-          <p>除此之外，作为野班子程序员兼大炼金术师——你可能最多以此身份见到我。没系统学过 CS，甚至连大学都没上过，全靠实战和搜索引擎活着。信奉"能跑就别动，能抄就别写"的代码哲学，数据结构设计一大糊涂。什么都能写一点，什么都不精。自从 AI 出来之后，反倒变成一体机的代表了。Anthropic的恩情还不完啊……</p>
-          <p>在文字的世界里，我是个杂食到什么都能吃的读文者。轻小说、网文、经典文学、哲学、宗教典籍、科普、散文、诗歌……从严肃到娱乐，从古典到流行，从中国到外国，来者不拒，多多益善。读得杂，想得也多。偶尔写点东西。当然，你们是看不到我的作品的。目前正在和我的亲友 薄暮 一起创作起源世界观。</p>
-          <p>有人说我是无可救药的萝莉控。针对这点，我在此严正声明：没什么可狡辩的，我就是。</p>
-          <p style="color:var(--text-muted); font-size: 13px; font-style: italic; margin-top: 16px;">萝莉妈妈什么的早就过时了……萝莉 BBA 才是最棒的……年上萝莉……</p>
+          <p v-html="t('about.p1')"></p>
+          <p>{{ t('about.p2') }}</p>
+          <p>{{ t('about.p3') }}</p>
+          <p>{{ t('about.p4') }}</p>
+          <p>{{ t('about.p5') }}</p>
+          <p>{{ t('about.p6') }}</p>
+          <p>{{ t('about.p7') }}</p>
+          <p style="color:var(--text-muted); font-size: 13px; font-style: italic; margin-top: 16px;">{{ t('about.p8') }}</p>
         </div>
         <div class="about-skills glass-card">
           <div class="skills-cloud">
-            <span v-for="tag in shuffledTags" :key="tag.label"
+            <span v-for="tag in displayTags" :key="tag.label"
               :class="['skill-tag', { highlight: tag.highlight }]"
               :style="tag.rx !== undefined ? {
                 transform: `translate(${tag.rx}px, ${tag.ry}px) rotate(${tag.rot}deg)`,
@@ -169,7 +185,7 @@ onMounted(() => {
 
   <section class="section" id="social">
     <div class="container" style="text-align: center;">
-      <div class="section-label">/ connect</div>
+      <div class="section-label">{{ t('social.label') }}</div>
       <h2 class="section-title">Find <span class="gradient-text">Me</span></h2>
       <div class="social-grid">
         <a class="social-btn glass-card" href="https://github.com/SparkofSpike" target="_blank" rel="noopener">
@@ -188,17 +204,45 @@ onMounted(() => {
         <span class="divider-dot">.</span>
       </div>
       <div class="footer-inner">
-        <span class="footer-text">2024 - 2026 Spike</span>
+        <span class="footer-text">{{ t('footer.year') }}</span>
         <span class="footer-sep">/</span>
-        <span class="footer-text">built in the void</span>
+        <span class="footer-text">{{ t('footer.built') }}</span>
         <span class="footer-sep">/</span>
-        <span class="footer-text">no more</span>
+        <span class="footer-text">{{ t('footer.note') }}</span>
       </div>
     </div>
   </footer>
 </template>
 
 <style scoped>
+.lang-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  background: rgba(10, 0, 18, 0.6);
+  backdrop-filter: blur(10px);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+}
+.lang-toggle:hover {
+  border-color: rgba(201, 168, 76, 0.4);
+  color: var(--accent-primary);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.1);
+  transform: scale(1.05);
+}
+
 .hero-section {
   min-height: 100vh;
   display: flex;
