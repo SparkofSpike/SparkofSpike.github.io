@@ -26,9 +26,6 @@ interface ShootingStar {
   trail: { x: number; y: number }[]
 }
 
-const STARS_COUNT = 380
-const CONSTELLATION_DIST = 165
-const MOUSE_CONNECT_DIST = 220
 const SHOOTING_STAR_INTERVAL = 5000
 
 let stars: Star[] = []
@@ -41,9 +38,22 @@ let mouseX = -9999
 let mouseY = -9999
 let mouseOnCanvas = false
 
+/* ===== Scale helpers ===== */
+function getStarCount(w: number, h: number) {
+  return Math.max(60, Math.floor(w * h * 0.000175))
+}
+function getConstDist(w: number, h: number) {
+  return Math.max(80, Math.sqrt(w * w + h * h) * 0.075)
+}
+function getMouseDist(w: number, h: number) {
+  return Math.max(100, Math.sqrt(w * w + h * h) * 0.1)
+}
+
 function initStars(w: number, h: number) {
+  const count = getStarCount(w, h)
+  const constDist = getConstDist(w, h)
   const s: Star[] = []
-  for (let i = 0; i < STARS_COUNT; i++) {
+  for (let i = 0; i < count; i++) {
     s.push({
       x: Math.random() * w, y: Math.random() * h,
       size: Math.random() * 2.2 + 0.3,
@@ -59,7 +69,7 @@ function initStars(w: number, h: number) {
   for (let i = 0; i < s.length; i++)
     for (let j = i + 1; j < s.length; j++) {
       const dx = s[i].x - s[j].x, dy = s[i].y - s[j].y
-      if (Math.sqrt(dx * dx + dy * dy) < CONSTELLATION_DIST) {
+      if (Math.sqrt(dx * dx + dy * dy) < constDist) {
         s[i].neighbors.push(j); s[j].neighbors.push(i)
       }
     }
@@ -77,6 +87,9 @@ function spawnShootingStar(w: number, h: number) {
 }
 
 function drawCanvas(ctx: CanvasRenderingContext2D, w: number, h: number, time: number) {
+  const constDist = getConstDist(w, h)
+  const mouseDist = getMouseDist(w, h)
+
   ctx.clearRect(0, 0, w, h)
 
   // Update positions
@@ -93,7 +106,7 @@ function drawCanvas(ctx: CanvasRenderingContext2D, w: number, h: number, time: n
     for (let i = 0; i < stars.length; i++)
       for (let j = i + 1; j < stars.length; j++) {
         const dx = stars[i].x - stars[j].x, dy = stars[i].y - stars[j].y
-        if (Math.sqrt(dx * dx + dy * dy) < CONSTELLATION_DIST) {
+        if (Math.sqrt(dx * dx + dy * dy) < constDist) {
           stars[i].neighbors.push(j); stars[j].neighbors.push(i)
         }
       }
@@ -109,8 +122,8 @@ function drawCanvas(ctx: CanvasRenderingContext2D, w: number, h: number, time: n
       if (starIdx >= ni) continue
       const dx = star.x - nb.x, dy = star.y - nb.y
       const dist = Math.sqrt(dx * dx + dy * dy)
-      if (dist >= CONSTELLATION_DIST) continue
-      const lineAlpha = (1 - dist / CONSTELLATION_DIST) * 0.35 * alpha
+      if (dist >= constDist) continue
+      const lineAlpha = (1 - dist / constDist) * 0.35 * alpha
       ctx.beginPath(); ctx.moveTo(star.x, star.y); ctx.lineTo(nb.x, nb.y)
       ctx.strokeStyle = `rgba(180, 170, 210, ${lineAlpha})`
       ctx.lineWidth = 1.0; ctx.stroke()
@@ -122,10 +135,10 @@ function drawCanvas(ctx: CanvasRenderingContext2D, w: number, h: number, time: n
     for (const star of stars) {
       const dx = star.x - mouseX, dy = star.y - mouseY
       const dist = Math.sqrt(dx * dx + dy * dy)
-      if (dist > MOUSE_CONNECT_DIST) continue
+      if (dist > mouseDist) continue
       const flicker = Math.sin(time * star.twinkleSpeed + star.twinklePhase) * 0.5 + 0.5
       const alpha = star.alpha * (0.4 + flicker * 0.6)
-      const lineAlpha = (1 - dist / MOUSE_CONNECT_DIST) * 0.6 * alpha
+      const lineAlpha = (1 - dist / mouseDist) * 0.6 * alpha
       ctx.beginPath(); ctx.moveTo(star.x, star.y); ctx.lineTo(mouseX, mouseY)
       ctx.strokeStyle = `rgba(201, 168, 76, ${lineAlpha})`
       ctx.lineWidth = 1.5; ctx.stroke()
@@ -142,7 +155,7 @@ function drawCanvas(ctx: CanvasRenderingContext2D, w: number, h: number, time: n
     const alpha = star.alpha * (0.4 + flicker * 0.6)
     const dx = star.x - mouseX, dy = star.y - mouseY
     const dMouse = Math.sqrt(dx * dx + dy * dy)
-    const boost = mouseOnCanvas && dMouse < MOUSE_CONNECT_DIST ? 0.4 : 0
+    const boost = mouseOnCanvas && dMouse < mouseDist ? 0.4 : 0
     const fa = Math.min(alpha + boost, 1)
     ctx.beginPath(); ctx.arc(star.x, star.y, star.size + (boost > 0 ? 0.5 : 0), 0, Math.PI * 2)
     const c = star.color
@@ -185,11 +198,12 @@ function startAnim() {
   if (!canvas) return
   const ctx = canvas.getContext('2d')!
   if (!ctx) return
-  const w = window.innerWidth, h = window.innerHeight
-  canvas.width = w; canvas.height = h
-  initStars(w, h)
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+  initStars(canvas.width, canvas.height)
   const startTime = Date.now()
   function frame() {
+    const w = canvas!.width, h = canvas!.height
     drawCanvas(ctx, w, h, (Date.now() - startTime) / 1000)
     animId = requestAnimationFrame(frame)
   }
