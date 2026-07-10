@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import StarField from './components/StarField.vue'
-import { useI18n, tLabel as tagLabel, t } from './i18n'
+import { useI18n, tagTranslations, t } from './i18n'
 
 const { locale, toggleLocale } = useI18n()
 
 /* ===== Tag Cloud Data ===== */
 interface TagItem {
   label: string
-  en?: string
   highlight?: boolean
   rx?: number; ry?: number; rot?: number; mt?: number
   fs?: number; pv?: number; ph?: number
@@ -17,29 +16,29 @@ interface TagItem {
 const allTags: TagItem[] = [
   { label: 'FPS', highlight: true },
   { label: 'Galgame', highlight: true },
-  { label: '洛氏恐怖', en: 'Lovecraftian Horror', highlight: true },
+  { label: '洛氏恐怖', highlight: true },
   { label: 'AIGC', highlight: true },
   { label: 'Vibe Coding', highlight: true },
   { label: 'STG', highlight: true },
   { label: 'OC', highlight: true },
-  { label: 'Web 开发', en: 'Web Dev' }, { label: 'JAVA' }, { label: 'C++' }, { label: 'C#' },
+  { label: 'Web 开发' }, { label: 'JAVA' }, { label: 'C++' }, { label: 'C#' },
   { label: 'Rust' }, { label: 'Lua' }, { label: 'SQLite' }, { label: 'Node.js' },
   { label: 'Python' }, { label: 'TypeScript' }, { label: 'HTML / CSS' },
   { label: 'Prompt Engineering' }, { label: 'Agent' }, { label: 'Context Engineering' },
   { label: 'Harness Engineering' }, { label: 'Loop Engineering' }, { label: 'MCP' },
-  { label: '世界观构筑', en: 'Worldbuilding', highlight: true },
-  { label: '神秘学', en: 'Occultism' }, { label: '神学', en: 'Theology' }, { label: '宗教学', en: 'Religious Studies' },
-  { label: '东方Project', en: 'Touhou Project', highlight: true }, { label: '网文', en: 'Web Novels' }, { label: '传统文化', en: 'Traditional Culture' },
-  { label: '魂系', en: 'Souls-like' }, { label: '守望先锋', en: 'Overwatch' }, { label: 'Steam' }, { label: '外设痴', en: 'Peripheral Maniac' },
-  { label: '克苏鲁神话', en: 'Cthulhu Mythos' }, { label: '蔚蓝档案', en: 'Blue Archive' }, { label: '公主连结', en: 'Princess Connect' }, { label: '刃牙', en: 'Baki' },
-  { label: '论战', en: 'Power Scaling' }, { label: '电波系', en: 'Denpa-kei' }, { label: '黑深残', en: 'Dark & Edgy' },
-  { label: 'BLACKSOULS' }, { label: '雌小鬼', en: 'Bratty Girl' }, { label: '笨蛋', en: 'Baka' },
-  { label: '金发', en: 'Blonde' }, { label: '贫乳', en: 'Flat Chest' }, { label: '泣系', en: 'Nakige' }, { label: '重力', en: 'Heavy' },
-  { label: '叙事诡计', en: 'Narrative Trick' }, { label: '神魔器', en: 'Denpa Gear' }, { label: '妹控', en: 'Siscon' },
-  { label: '超时空辉夜姬！', en: 'Space-Time Kaguya-hime!' }, { label: '海虎', en: 'Sea Tiger' },
+  { label: '世界观构筑', highlight: true },
+  { label: '神秘学' }, { label: '神学' }, { label: '宗教学' },
+  { label: '东方Project', highlight: true }, { label: '网文' }, { label: '传统文化' },
+  { label: '魂系' }, { label: '守望先锋' }, { label: 'Steam' }, { label: '外设痴' },
+  { label: '克苏鲁神话' }, { label: '蔚蓝档案' }, { label: '公主连结' }, { label: '刃牙' },
+  { label: '论战' }, { label: '电波系' }, { label: '黑深残' },
+  { label: 'BLACKSOULS' }, { label: '雌小鬼' }, { label: '笨蛋' },
+  { label: '金发' }, { label: '贫乳' }, { label: '泣系' }, { label: '重力' },
+  { label: '叙事诡计' }, { label: '神魔器' }, { label: '妹控' },
+  { label: '超时空辉夜姬！' }, { label: '海虎' },
   { label: 'Neural-Memory' }, { label: 'CodeWhale' },
-  { label: '术力口', en: 'Vocaloid-ish' }, { label: '猫娘', en: 'Catgirl' }, { label: '考据狂', en: 'Lore Junkie' }, { label: '中二病', en: 'Chuunibyou' },
-  { label: '萝莉控', en: 'Lolicon', highlight: true },
+  { label: '术力口' }, { label: '猫娘' }, { label: '考据狂' }, { label: '中二病' },
+  { label: '萝莉控', highlight: true },
 ]
 
 const shuffledTags = ref<TagItem[]>([])
@@ -47,7 +46,9 @@ const shuffledTags = ref<TagItem[]>([])
 const displayTags = computed(() =>
   shuffledTags.value.map(t => ({
     ...t,
-    label: tagLabel(t),
+    label: locale.value === 'en' && tagTranslations[t.label]
+      ? tagTranslations[t.label].en
+      : t.label,
   }))
 )
 
@@ -77,17 +78,22 @@ function syncRightHeight() {
   const right = document.querySelector<HTMLElement>('.about-skills')
   const cloud = document.querySelector<HTMLElement>('.skills-cloud')
   if (!left || !right || !cloud) return
-  const targetH = left.offsetHeight
-  right.style.maxHeight = `${targetH}px`
-  const pad = 64
-  const contentH = cloud.scrollHeight
-  if (contentH > targetH - pad) {
-    const factor = (targetH - pad) / contentH
-    cloud.style.transform = `scale(${factor})`
-    cloud.style.transformOrigin = 'top center'
-  } else {
-    cloud.style.transform = 'none'
-  }
+  // Clear previous transform so layout is accurate for measurement
+  cloud.style.transform = 'none'
+  right.style.maxHeight = ''
+  requestAnimationFrame(() => {
+    const targetH = left.offsetHeight
+    right.style.maxHeight = `${targetH}px`
+    const pad = 64
+    const contentH = cloud.scrollHeight
+    if (contentH > targetH - pad) {
+      const factor = (targetH - pad) / contentH
+      cloud.style.transform = `scale(${factor})`
+      cloud.style.transformOrigin = 'top center'
+    } else {
+      cloud.style.transform = 'none'
+    }
+  })
 }
 
 onMounted(() => {
